@@ -1,0 +1,70 @@
+ syntax = "proto3";
+
+package coordinator;
+
+// ---------- Service -------------------------------------------------
+service Coordinator {
+
+  rpc registerModels  (ModelListRequest) returns (ModelListResponse);
+  rpc connect         (ConnectRequest) returns (ConnectResponse);
+
+  // Stream detections from inference model to Flutter app
+  // Bidirectional streaming: client sends detections, server sends continuous acks
+  rpc streamDetections(stream Detection) returns (stream Ack);
+  rpc ping            (HeartBeat) returns (Ack);
+}
+
+//  Model catalogue 
+message ModelListRequest {
+  repeated Model available_models  = 1; // human-readable model names that updates dropdown menu
+}
+
+message ModelListResponse {
+  bool   success        = 1;
+  uint32 control_id     = 2; // short handle (> 1) for later messages
+  Model  selected_model = 3;
+}
+
+message Model {
+  string model_name    = 1;
+  string model_version = 2;
+}
+
+//  Control 
+message ConnectRequest {
+  // Sent by model when it boots
+  Model  selected_model = 1;
+  uint32 control_id     = 2; 
+}
+
+message ConnectResponse {
+  bool   accepted       = 1;   // if false => infer shut down
+  string error_msg      = 2;
+}
+
+//  Detection stream 
+message Detection {
+  string       class      = 1;
+  int32        class_id   = 2;
+  float        confidence = 3;
+  BoundBox     bbox       = 4;
+  uint64       ts_micros  = 5; 
+}
+
+message BoundBox {
+  int32 x       = 1;
+  int32 y       = 2;
+  int32 width   = 3;
+  int32 height  = 4;
+}
+
+message Ack {
+  bool   success        = 1;
+  string message        = 2; //continue/switch/stop
+}
+
+//  Heart-beat 
+message HeartBeat {
+  uint32 control_id = 1;
+  uint64 ts_micros  = 2;
+}
