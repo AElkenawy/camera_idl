@@ -25,9 +25,11 @@ case "$TARGET" in
     ;;
 
   dart)
-    export PATH="$PATH":"path/to/workspace-automation/.config/flutter_workspace/pub_cache/bin"
-    protoc --dart_out=grpc:$BUILD_DIR/ -I$PROTO_DIR $PROTO_DIR/*.proto
-    echo "Dart code generated in $BUILD_DIR/"
+    mkdir -p ../lib/$BUILD_DIR
+    dart pub global activate protoc_plugin
+    export PATH="$PATH":"$PUB_CACHE/bin"
+    protoc --dart_out=grpc:../lib/$BUILD_DIR/ -I$PROTO_DIR $PROTO_DIR/*.proto
+    echo "Dart code generated in ../lib/$BUILD_DIR/"
     ;;
 
   python)
