@@ -26,7 +26,7 @@ case "$TARGET" in
 
   dart)
     mkdir -p ../lib/$BUILD_DIR
-    dart pub global activate protoc_plugin
+    dart pub global activate protoc_plugin 20.0.1
     export PATH="$PATH":"$PUB_CACHE/bin"
     protoc --dart_out=grpc:../lib/$BUILD_DIR/ -I$PROTO_DIR $PROTO_DIR/*.proto
     echo "Dart code generated in ../lib/$BUILD_DIR/"
