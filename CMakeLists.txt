@@ -4,7 +4,8 @@ find_package(PkgConfig REQUIRED)
 #
 # GRPC
 #
-pkg_check_modules(GRPC IMPORTED_TARGET grpc++ protobuf REQUIRED)
+find_package(Protobuf CONFIG REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
 
 find_program(GRPC_CPP_PLUGIN_EXE grpc_cpp_plugin REQUIRED)
 find_program(PROTOC_EXE protoc REQUIRED)
@@ -40,4 +41,7 @@ target_include_directories(coordinator_grpc_proto PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/gen
 )
 
-target_link_libraries(coordinator_grpc_proto PUBLIC PkgConfig::GRPC)
+target_link_libraries(coordinator_grpc_proto PUBLIC 
+    gRPC::grpc++
+    protobuf::libprotobuf
+)
